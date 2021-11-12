@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+    </style>
+  </head>
+  <body>
+  
+  <canvas id="myCanvas"
+  width="500"
+  height="500"
+  style="border:1px solid #c3c3c3;">
+  Your browser does not support the canvas element.
+  </canvas>
+
+  <script>
+    var firstRun = true;
+    var width = document.getElementById("myCanvas").width;
+    var height = document.getElementById("myCanvas").height ;
+    var desenhando = false;
+    var canvas = document.getElementById("myCanvas");
+    var ctx = canvas.getContext("2d");
+    var saved = false;
+    ctx.translate(width/2, height/2);
+    ctx.font = 'italic 18px Arial';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText('Clique aqui!', 0, 0);
+    
+    
+
+    canvas.onclick = () => {
+      generatePattern();
+      if(!firstRun && document.getElementById("salvar")){
+        document.getElementById("salvar").disabled = false;
+      }
+    }
+    canvas.onmousedown = (evt) => {
+      ctx.fillStyle = "#0b03fc";
+      ctx.moveTo(evt.clientX, evt.clientY);
+      desenhando = true;
+      
+    }
+
+    canvas.onmouseup = () => {
+      desenhando = false;
+    }
+
+    canvas.onmousemove = function (evt) {
+      if (desenhando) {
+        ctx.lineTo(evt.clientX, evt.clientY);
+        ctx.stroke();
+      }
+    }
+
+    generatePattern = () =>{
+      if(saved){
+        ctx.restore();
+        saved = false;
+      } else if(!firstRun){
+        console.log('clear')
+        canvas.width = canvas.width
+        ctx.translate(width/2, height/2);
+      } else if(firstRun){
+        canvas.width = canvas.width
+        ctx.translate(width/2, height/2);
+      }
+      for(var i = 0 ; i<=document.getElementById("range").value; i++){
+        ctx.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
+        ctx.globalAlpha = Math.random()*1
+        ctx.rotate((Math.random()*i * Math.PI)/i/10)
+        ctx.beginPath();
+        ctx.arc(0, 0, 250, 0, (Math.random()*i* Math.PI)/i);
+        ctx.fill();
+      }
+      firstRun = false;
+    }
+    salvar = () => {
+      console.log('salvo')
+      ctx.save();
+      saved = true;
+      generatePattern();
+    }
+
+    isDisabled = () =>{
+      return firstRun
+    }
+  </script>
+  <button onclick="salvar()" id="salvar" disabled>Manter padrão atual e mesclar com outro</button>
+  <p>Regular aleatoriedade</p>
+  <input type="range" min="20" max="100" id="range" value="50">
+  </body>
+</html>
+
