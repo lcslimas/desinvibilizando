@@ -81,7 +81,7 @@
           for(var i = 0 ; i<=document.getElementById("range").value; i++){
             let randomNumber = (Math.random() * i * Math.PI)/i
             ctx.fillStyle = "#"+Math.floor(Math.random()*16777216).toString(16);
-            ctx.globalAlpha = Math.random()*0.6
+            ctx.globalAlpha = Math.random()*1
             ctx.rotate(0);
             ctx.rotate(randomNumber/10)
             ctx.beginPath();
