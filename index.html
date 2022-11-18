@@ -2,93 +2,112 @@
 <html>
   <head>
     <style>
+      .wrapper {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        flex-direction: column;
+      }
+      .wrapper > div {
+        margin: 30px;
+      }
+      #salvar {
+        border-radius: 10px;
+        height: 40px;
+        font-size: 20px;
+        background-color: aliceblue;
+        border-color: cyan;
+      }
+      fieldset {
+        width: 150px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+      }
     </style>
   </head>
   <body>
-  
-  <canvas id="myCanvas"
-  width="500"
-  height="500"
-  style="border:1px solid #c3c3c3;">
-  Your browser does not support the canvas element.
-  </canvas>
+    <div class="wrapper">
+      <canvas id="myCanvas"
+      width="500"
+      height="500">
+      Your browser does not support the canvas element.
+      </canvas>
 
-  <script>
-    var firstRun = true;
-    var width = document.getElementById("myCanvas").width;
-    var height = document.getElementById("myCanvas").height ;
-    var desenhando = false;
-    var canvas = document.getElementById("myCanvas");
-    var ctx = canvas.getContext("2d");
-    var saved = false;
-    ctx.translate(width/2, height/2);
-    ctx.font = 'italic 18px Arial';
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText('Clique aqui!', 0, 0);
-    
-    
+      <script>
+        function download() {
+          const dt = canvas.toDataURL('image/jpeg');
+          this.href = dt;
+        };
 
-    canvas.onclick = () => {
-      generatePattern();
-      if(!firstRun && document.getElementById("salvar")){
-        document.getElementById("salvar").disabled = false;
-      }
-    }
-    canvas.onmousedown = (evt) => {
-      ctx.fillStyle = "#0b03fc";
-      ctx.moveTo(evt.clientX, evt.clientY);
-      desenhando = true;
-      
-    }
-
-    canvas.onmouseup = () => {
-      desenhando = false;
-    }
-
-    canvas.onmousemove = function (evt) {
-      if (desenhando) {
-        ctx.lineTo(evt.clientX, evt.clientY);
-        ctx.stroke();
-      }
-    }
-
-    generatePattern = () =>{
-      if(saved){
-        ctx.restore();
-        saved = false;
-      } else if(!firstRun){
-        console.log('clear')
-        canvas.width = canvas.width
+        let firstRun = true;
+        const width = document.getElementById("myCanvas").width;
+        const height = document.getElementById("myCanvas").height ;
+        let desenhando = false;
+        const canvas = document.getElementById("myCanvas");
+        const ctx = canvas.getContext("2d");
+        let saved = false;
+        let salvarButton = document.getElementById("salvar");
+        let linkDownload = document.getElementById("downloadLnk");
         ctx.translate(width/2, height/2);
-      } else if(firstRun){
-        canvas.width = canvas.width
-        ctx.translate(width/2, height/2);
-      }
-      for(var i = 0 ; i<=document.getElementById("range").value; i++){
-        ctx.fillStyle = "#"+Math.floor(Math.random()*16777215).toString(16);
-        ctx.globalAlpha = Math.random()*1
-        ctx.rotate((Math.random()*i * Math.PI)/i/10)
-        ctx.beginPath();
-        ctx.arc(0, 0, 250, 0, (Math.random()*i* Math.PI)/i);
-        ctx.fill();
-      }
-      firstRun = false;
-    }
-    salvar = () => {
-      console.log('salvo')
-      ctx.save();
-      saved = true;
-      generatePattern();
-    }
+        ctx.font = 'italic 18px Arial';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText('Clique aqui!', 0, 0);
+        
+        canvas.onclick = () => {
+          salvarButton = document.getElementById("salvar");
+          linkDownload = document.getElementById("downloadLnk");
+          generatePattern();
+          if(!firstRun && document.getElementById("salvar")){
+            salvarButton.disabled = false;
+            linkDownload.disabled = false;
+          }
+        }
 
-    isDisabled = () =>{
-      return firstRun
-    }
-  </script>
-  <button onclick="salvar()" id="salvar" disabled>Manter padrão atual e mesclar com outro</button>
-  <p>Regular aleatoriedade</p>
-  <input type="range" min="20" max="100" id="range" value="50">
+        generatePattern = () =>{
+          document.getElementById('downloadLnk').addEventListener('click', download, false);
+          if(saved){
+            ctx.restore();
+            saved = false;
+          } else if(!firstRun){
+            canvas.width = canvas.width
+            ctx.translate(width/2, height/2);
+          } else if(firstRun){
+            canvas.width = canvas.width
+            ctx.translate(width/2, height/2);
+          }
+          const squareOrCircle = Math.ceil(Math.random()*2) * 250
+          for(var i = 0 ; i<=document.getElementById("range").value; i++){
+            let randomNumber = (Math.random() * i * Math.PI)/i
+            ctx.fillStyle = "#"+Math.floor(Math.random()*16777216).toString(16);
+            ctx.globalAlpha = Math.random()*0.6
+            ctx.rotate(0);
+            ctx.rotate(randomNumber/10)
+            ctx.beginPath();
+            ctx.arc(0, 0, squareOrCircle , 0, randomNumber);
+            ctx.fill();
+          }
+          firstRun = false;
+
+        }
+        salvar = () => {
+          ctx.save();
+          saved = true;
+          generatePattern();
+        }
+      </script>
+      <div>
+        <button onclick="salvar()" id="salvar" disabled>Manter padrão atual e mesclar com outro</button>
+      </div>
+      <fieldset style="width: 150px">
+        <p>Regular aleatoriedade</p>
+        <input type="range" min="0" max="200" id="range" value="100">
+      </fieldset title="Relugar aleatoriedade">
+      <div>
+       <a id="downloadLnk" download="arte.jpg" href="#">Baixe sua Obra</a>
+      </div>
+    </div>
   </body>
 </html>
 
